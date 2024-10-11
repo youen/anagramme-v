@@ -33,20 +33,26 @@ fn (a Anagramme) seed( word string) string {
 struct SeedSplitter {
 	seed string
 mut:
-	k = 0
+	k int
 	choice_k_in ChoiceKIn
 }
 
 fn new_seed_splitter(seed string) SeedSplitter {
 	return SeedSplitter {
 		seed : seed,
-		choice_k_in : new_choice_k_in(seed, 5)
+		k : 2
+		choice_k_in : new_choice_k_in(seed, 2)
 	}
 }
 
 fn (mut s SeedSplitter) next() ?[]string {
 
 	combi := s.choice_k_in.next() or { 
+		if s.k < s.seed.len {
+			s.k++
+			s.choice_k_in = new_choice_k_in(s.seed, s.k)
+			return s.next()
+		}
 		return none
 		}
 

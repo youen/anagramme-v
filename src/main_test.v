@@ -25,9 +25,9 @@ fn find_subseeds (seed string)  [][]string {
 
 fn test_seed_spliter() {
 
-	//assert ["ce", "hin"] in find_subseeds("cehin")
-	//assert ["ee", "gin"] in find_subseeds("eegin")
-	//assert ["eg", "ein"] in find_subseeds("eegin")
+	assert ["ce", "hin"] in find_subseeds("cehin")
+	assert ["ee", "gin"] in find_subseeds("eegin")
+	assert ["eg", "ein"] in find_subseeds("eegin")
 	assert ["cehin", "eegin"] in find_subseeds("ceeeghiinn")
 
 }
