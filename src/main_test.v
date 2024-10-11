@@ -2,7 +2,11 @@ module main
 
 
 fn test_anagrame () {
-	anagramme := new_anagramme()
+	mut anagramme := new_anagramme()
+	anagramme.add("chien")
+	anagramme.add("niche")
+	anagramme.add("genie")
+	anagramme.add("neige")
 	
 	assert "niche" in anagramme.find("chien")
 	assert "neige" in anagramme.find("genie")

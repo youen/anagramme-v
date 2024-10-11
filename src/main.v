@@ -9,14 +9,14 @@ fn main() {
 }
 
 struct Anagramme {
+mut:
 	index map[string][]string
 }
 
 fn new_anagramme() Anagramme {
 	return Anagramme{
 		index : {
-			"cehin" : ["chien", "niche"]
-			"eegin" : ["genie", "neige"]
+
 		}
 	}
 }
@@ -30,6 +30,12 @@ fn find_subseeds (seed string)  [][]string {
 	}
 
 	return subseeds
+
+}
+
+fn (mut a Anagramme) add( word string)  {
+
+	a.index[a.seed(word)] << word
 
 }
 
