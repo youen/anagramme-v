@@ -19,13 +19,36 @@ fn new_anagramme() Anagramme {
 	}
 }
 
+fn find_subseeds (seed string)  [][]string {
+	ss := new_seed_splitter(seed)
+
+	mut subseeds := [][]string{}
+	for subseed in ss {
+		subseeds << subseed
+	}
+
+	return subseeds
+
+}
+
 fn (a Anagramme) find( word string) []string {
 
-	return a.index[a.seed(word)]
+	mut result :=  a.index[a.seed(word)]
+	for  subseed in find_subseeds(a.seed(word)) {
+		first_col := a.index[subseed[0]] or {  continue}
+		second_col := a.index[subseed[1]] or {  continue}
+		for first in first_col{
+			for second in second_col {
+				result << "${first} ${second}"
+			}
+		}
+	}
+
+	return result
 }
 
 fn (a Anagramme) seed( word string) string {
-	mut runes := word.runes()
+	mut runes := word.replace(" ","").runes()
 	runes.sort()
 	return runes.string()
 }

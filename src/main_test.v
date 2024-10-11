@@ -7,21 +7,11 @@ fn test_anagrame () {
 	assert "niche" in anagramme.find("chien")
 	assert "neige" in anagramme.find("genie")
 
-	//assert "neige niche" in anagramme.find("chien genie")
+	assert "neige niche" in anagramme.find("chien genie")
 
 }
 
-fn find_subseeds (seed string)  [][]string {
-	ss := new_seed_splitter(seed)
 
-	mut subseeds := [][]string{}
-	for subseed in ss {
-		subseeds << subseed
-	}
-
-	return subseeds
-
-}
 
 fn test_seed_spliter() {
 
