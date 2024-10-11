@@ -3,17 +3,7 @@ module main
 import vsl.iter
 
 fn main() {
-	s :="abc"
-	println(s)
-	mut allcombi := []string{}
 
-	ckin := new_choice_k_in(s, 2)
-	
-	for combi in ckin {
-		allcombi << combi
-	}
-
-	println(allcombi)
 }
 
 struct Anagramme {
@@ -30,6 +20,7 @@ fn new_anagramme() Anagramme {
 }
 
 fn (a Anagramme) find( word string) []string {
+
 	return a.index[a.seed(word)]
 }
 
@@ -42,11 +33,37 @@ fn (a Anagramme) seed( word string) string {
 struct SeedSplitter {
 	seed string
 mut:
-	k int = 2
+	k = 0
+	choice_k_in ChoiceKIn
 }
 
-fn (s SeedSplitter) next() ?[]string {
-	return none
+fn new_seed_splitter(seed string) SeedSplitter {
+	return SeedSplitter {
+		seed : seed,
+		choice_k_in : new_choice_k_in(seed, 5)
+	}
+}
+
+fn (mut s SeedSplitter) next() ?[]string {
+
+	combi := s.choice_k_in.next() or { 
+		return none
+		}
+
+	mut first := ""
+	mut second := ""
+	for index in 0..s.seed.len {
+		if index in combi {
+			 first += s.seed[index].ascii_str()
+		} else {
+
+		second += s.seed[index].ascii_str()
+		}
+
+
+	}
+
+	return [first, second]
 }
 
 struct ChoiceKIn {
@@ -56,26 +73,26 @@ mut:
 
 fn new_choice_k_in(seed string, k int) ChoiceKIn {
 	mut code := []f64{}
-	for l in seed.bytes() {
-		code << f64(l)
+	for index in 0..seed.len {
+		code << f64(index)
 	}
 	return ChoiceKIn {
 		iter : iter.CombinationsIter.new(code, k)
 	} 
 }
 
-fn (mut c ChoiceKIn) next() ?string {
+fn (mut c ChoiceKIn) next() ?[]int {
 	
 
 	combi := c.iter.next() or { 
 		return none
 		} 
 
-	mut combi_u8 := []u8{}
+	mut combi_int := []int{}
 	for n in combi {
-		combi_u8 << u8(n)
+		combi_int << int(n)
 	}
 
-	return combi_u8.bytestr()
+	return combi_int
 	
 }

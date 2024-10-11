@@ -6,29 +6,36 @@ fn test_anagrame () {
 	
 	assert "niche" in anagramme.find("chien")
 	assert "neige" in anagramme.find("genie")
+
 	//assert "neige niche" in anagramme.find("chien genie")
 
 }
 
-fn test_seed_spliter() {
-	
-	ss := SeedSplitter{
-		seed : "eegin"
-	}
+fn find_subseeds (seed string)  [][]string {
+	ss := new_seed_splitter(seed)
 
 	mut subseeds := [][]string{}
 	for subseed in ss {
 		subseeds << subseed
 	}
 
-	assert subseeds == [
-	]
+	return subseeds
+
+}
+
+fn test_seed_spliter() {
+
+	//assert ["ce", "hin"] in find_subseeds("cehin")
+	//assert ["ee", "gin"] in find_subseeds("eegin")
+	//assert ["eg", "ein"] in find_subseeds("eegin")
+	assert ["cehin", "eegin"] in find_subseeds("ceeeghiinn")
+
 }
 
 fn test_choice_k_in() {
 	
 	s :="abc"
-	mut allcombi := []string{}
+	mut allcombi := [][]int{}
 
 	ckin := new_choice_k_in(s, 2)
 	
@@ -37,8 +44,8 @@ fn test_choice_k_in() {
 	}
 
 	assert allcombi == [
-		'ab',
-		'ac',
-		'bc',
+		[0, 1],
+		[0, 2],
+		[1, 2],
 	]
 }
