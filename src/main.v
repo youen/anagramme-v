@@ -2,6 +2,8 @@ module main
 
 import vsl.iter
 
+import arrays
+
 fn main() {
 
 }
@@ -44,7 +46,7 @@ fn (a Anagramme) find( word string) []string {
 		}
 	}
 
-	return result
+	return arrays.distinct(result)
 }
 
 fn (a Anagramme) seed( word string) string {

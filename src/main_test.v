@@ -8,6 +8,7 @@ fn test_anagrame () {
 	assert "neige" in anagramme.find("genie")
 
 	assert "neige niche" in anagramme.find("chien genie")
+	assert  ['chien genie', 'chien neige', 'genie chien', 'genie niche', 'neige chien', 'neige niche', 'niche genie', 'niche neige'] == anagramme.find("chien genie")
 
 }
 
