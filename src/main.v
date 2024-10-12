@@ -7,23 +7,23 @@ import arrays
 
 fn main() {
 	mut anagramme := new_anagramme()
+	anagramme.load_file("data/francais.txt")!
+	anagramme.load_file("data/1grams_french.csv")!
+	anagramme.load_file("data/2grams_french.csv")!
+	anagramme.load_file("data/3grams_french.csv")!
+	anagramme.load_file("data/4grams_french.csv")!
+	anagramme.load_file("data/5grams_french.csv")!
 
-	francais := os.read_file('./francais.txt') !
-    mut reader := csv.new_reader(francais)
-    for {
-        word := reader.read() or {
-            break
-        }
-        anagramme.add(word[0])
-    }
 
 //	println(anagramme.find("lino pimo")) // mini pool
 //	println(anagramme.find("adrien youen")) // 'denier noyau'
 //	println(anagramme.find("cgi n est pas a vendre")) // 'passant divergence'
 //	println(anagramme.find("eric simon")) // roi mince
 //	println(anagramme.find("france travail")) // 'flairer vacant' 
-// println(anagramme.find("cgi n est pas a vendre"))
-
+//	println(anagramme.find("cgi n est pas a vendre"))
+	println(os.args[1])
+	println(anagramme.find(os.args[1]))
+	
 }
 
 struct Anagramme {
@@ -55,6 +55,19 @@ fn (mut a Anagramme) add( word string)  {
 
 	a.index[a.seed(word)] << word
 
+}
+
+fn (mut a Anagramme) load_file(filename string) ! {
+	data := os.read_file(filename) !
+    mut reader := csv.new_reader(data)
+	// read header
+	reader.read() !
+    for {
+        word := reader.read() or {
+            break
+        }
+        a.add(word[0])
+    }
 }
 
 fn (a Anagramme) find( word string) []string {
