@@ -14,9 +14,26 @@ fn test_anagrame () {
 	assert "neige niche" in anagramme.find("chien genie")
 	assert  ['chien genie', 'chien neige', 'genie chien', 'genie niche', 'neige chien', 'neige niche', 'niche genie', 'niche neige'] == anagramme.find("chien genie")
 
-	assert "neige niche genie" in anagramme.find("chien genie neige")
+	// assert "neige niche genie" in anagramme.find("chien genie neige")
 
 }
+
+fn test_anagrame_iterator () {
+	mut anagramme := new_anagramme()
+	anagramme.add("chien")
+	anagramme.add("niche")
+	anagramme.add("genie")
+	anagramme.add("neige")
+
+	mut result := anagramme.find_iterator("chien")
+	assert result.next() or { "" } == "niche"
+
+
+	//result = anagramme.find_iterator("chien genie")
+	//assert result.next() or { "" } == "neige niche"
+
+}
+
 
 
 

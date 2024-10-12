@@ -86,6 +86,56 @@ fn (a Anagramme) find( word string) []string {
 	return arrays.distinct(result)
 }
 
+enum AnagrammeIteratorState as u8 {
+	start
+	direct
+}
+
+struct AnagrammeIterator {
+	anagramme Anagramme
+	seed string
+
+mut:
+	ss SeedSplitter
+	state AnagrammeIteratorState
+	buffer []string
+
+}
+
+fn (a Anagramme) find_iterator( word string) AnagrammeIterator {
+	seed := a.seed(word)
+	return AnagrammeIterator{
+		anagramme : a
+		seed : seed
+		ss : new_seed_splitter(seed)
+		state : AnagrammeIteratorState.start
+	}
+
+}
+
+fn (mut a AnagrammeIterator) next() ?string {
+	match a.state {
+		.start {
+			a.buffer = a.anagramme.index[a.seed]
+			a.state = AnagrammeIteratorState.direct
+			return a.next()
+
+		}
+		.direct {
+			if a.buffer.len > 0 {
+				return a.buffer.pop()
+
+			} else {
+				return none
+			}
+
+		}
+	}
+
+	return none
+
+}
+
 fn (a Anagramme) seed( word string) string {
 	mut runes := word.replace(" ","").runes()
 	runes.sort()
