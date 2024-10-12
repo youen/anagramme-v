@@ -1,10 +1,28 @@
 module main
 
 import vsl.iter
-
+import os
+import encoding.csv
 import arrays
 
 fn main() {
+	mut anagramme := new_anagramme()
+
+	francais := os.read_file('./francais.txt') !
+    mut reader := csv.new_reader(francais)
+    for {
+        word := reader.read() or {
+            break
+        }
+        anagramme.add(word[0])
+    }
+
+//	println(anagramme.find("lino pimo")) // mini pool
+//	println(anagramme.find("adrien youen")) // 'denier noyau'
+//	println(anagramme.find("cgi n est pas a vendre")) // 'passant divergence'
+//	println(anagramme.find("eric simon")) // roi mince
+//	println(anagramme.find("france travail")) // 'flairer vacant' 
+// println(anagramme.find("cgi n est pas a vendre"))
 
 }
 
@@ -45,7 +63,7 @@ fn (a Anagramme) find( word string) []string {
 	for  subseed in find_subseeds(a.seed(word)) {
 		first_col := a.index[subseed[0]] or {  continue}
 		second_col := a.index[subseed[1]] or {  continue}
-		for first in first_col{
+			for first in first_col{
 			for second in second_col {
 				result << "${first} ${second}"
 			}
