@@ -29,8 +29,8 @@ fn test_anagrame_iterator () {
 	assert result.next() or { "" } == "niche"
 
 
-	//result = anagramme.find_iterator("chien genie")
-	//assert result.next() or { "" } == "neige niche"
+	result = anagramme.find_iterator("chien genie")
+	assert result.next() or { "" } == "niche neige"
 
 }
 

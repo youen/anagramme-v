@@ -89,6 +89,7 @@ fn (a Anagramme) find( word string) []string {
 enum AnagrammeIteratorState as u8 {
 	start
 	direct
+	subseed
 }
 
 struct AnagrammeIterator {
@@ -126,12 +127,30 @@ fn (mut a AnagrammeIterator) next() ?string {
 				return a.buffer.pop()
 
 			} else {
-				return none
+				a.state = AnagrammeIteratorState.subseed
+				return a.next()
+			}
+
+		}
+		.subseed {
+			if a.buffer.len > 0 {
+				return a.buffer.pop()
+
+			} else {
+				subseed := a.ss.next() or { return none}
+				first_col := a.anagramme.index[subseed[0]] or {  return a.next()  }
+				second_col := a.anagramme.index[subseed[1]] or { return a.next( ) }
+				for first in first_col{
+					for second in second_col {
+						a.buffer << "${first} ${second}"
+					}
+				}
+				return a.next()
 			}
 
 		}
 	}
-
+	
 	return none
 
 }
