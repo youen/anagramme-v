@@ -21,8 +21,10 @@ fn main() {
 //	println(anagramme.find("eric simon")) // roi mince
 //	println(anagramme.find("france travail")) // 'flairer vacant' 
 //	println(anagramme.find("cgi n est pas a vendre"))
-	println(os.args[1])
-	println(anagramme.find(os.args[1]))
+	println(">>> ${os.args[1]}")
+	for result in  anagramme.find_iterator(os.args[1]) {
+		println(result)
+	}
 	
 }
 
@@ -72,15 +74,9 @@ fn (mut a Anagramme) load_file(filename string) ! {
 
 fn (a Anagramme) find( word string) []string {
 
-	mut result :=  a.index[a.seed(word)]
-	for  subseed in find_subseeds(a.seed(word)) {
-		first_col := a.index[subseed[0]] or {  continue}
-		second_col := a.index[subseed[1]] or {  continue}
-			for first in first_col{
-			for second in second_col {
-				result << "${first} ${second}"
-			}
-		}
+	mut result :=  []string{}
+	for anagramme in a.find_iterator(word) {
+		result << anagramme
 	}
 
 	return arrays.distinct(result)
@@ -92,6 +88,7 @@ enum AnagrammeIteratorState as u8 {
 	subseed
 }
 
+
 struct AnagrammeIterator {
 	anagramme Anagramme
 	seed string
@@ -100,6 +97,7 @@ mut:
 	ss SeedSplitter
 	state AnagrammeIteratorState
 	buffer []string
+	cache map[string]bool
 
 }
 
@@ -115,39 +113,51 @@ fn (a Anagramme) find_iterator( word string) AnagrammeIterator {
 }
 
 fn (mut a AnagrammeIterator) next() ?string {
-	match a.state {
-		.start {
-			a.buffer = a.anagramme.index[a.seed]
-			a.state = AnagrammeIteratorState.direct
-			return a.next()
+	for {
+		match a.state {
+			.start {
+				a.buffer = a.anagramme.index[a.seed]
+				a.state = AnagrammeIteratorState.direct
 
-		}
-		.direct {
-			if a.buffer.len > 0 {
-				return a.buffer.pop()
-
-			} else {
-				a.state = AnagrammeIteratorState.subseed
-				return a.next()
 			}
+			.direct {
+				if a.buffer.len > 0 {
+					if a.buffer.last() in a.cache {
+						a.buffer.pop()
+						return a.next()
+					} else {
+						result := a.buffer.pop()
+						a.cache[result] = true
+						return result
+					}
 
-		}
-		.subseed {
-			if a.buffer.len > 0 {
-				return a.buffer.pop()
+				} else {
+					a.state = AnagrammeIteratorState.subseed
+				}
 
-			} else {
-				subseed := a.ss.next() or { return none}
-				first_col := a.anagramme.index[subseed[0]] or {  return a.next()  }
-				second_col := a.anagramme.index[subseed[1]] or { return a.next( ) }
-				for first in first_col{
-					for second in second_col {
-						a.buffer << "${first} ${second}"
+			}
+			.subseed {
+				if a.buffer.len > 0 {
+		
+					return a.buffer.pop()
+					
+				} else {
+					subseed := a.ss.next() or { return none}
+
+					first_col := a.anagramme.index[subseed[0]] or {  continue }
+					second_col := a.anagramme.index[subseed[1]] or { continue }
+					for first in first_col{
+						for second in second_col {
+							result := "${first} ${second}"
+							if !(result in a.cache ){
+								a.cache[result] = true
+								a.buffer <<  result
+							}
+						}
 					}
 				}
-				return a.next()
-			}
 
+			}
 		}
 	}
 	
