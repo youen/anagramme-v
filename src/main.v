@@ -86,6 +86,7 @@ enum AnagrammeIteratorState as u8 {
 	start
 	direct
 	subseed
+	recursive
 }
 
 
@@ -124,7 +125,7 @@ fn (mut a AnagrammeIterator) next() ?string {
 				if a.buffer.len > 0 {
 					if a.buffer.last() in a.cache {
 						a.buffer.pop()
-						return a.next()
+						continue
 					} else {
 						result := a.buffer.pop()
 						a.cache[result] = true
@@ -142,13 +143,48 @@ fn (mut a AnagrammeIterator) next() ?string {
 					return a.buffer.pop()
 					
 				} else {
-					subseed := a.ss.next() or { return none}
+					subseed := a.ss.next() or {  
+						a.state = AnagrammeIteratorState.recursive
+						a.ss =  new_seed_splitter(a.seed)
+						continue
+					}
 
 					first_col := a.anagramme.index[subseed[0]] or {  continue }
-					second_col := a.anagramme.index[subseed[1]] or { continue }
+					second_col := a.anagramme.index[subseed[1]] or {  continue }
 					for first in first_col{
 						for second in second_col {
 							result := "${first} ${second}"
+							ratio := f64(result.count(" ")) / f64(result.len) 
+							//println("${result} : ${ratio}")
+							if (ratio) >  0.1 {
+								continue
+							}
+							if !(result in a.cache ){
+								a.cache[result] = true
+								a.buffer <<  result
+							}
+						}
+					}
+				}
+
+			}
+			.recursive {
+				if a.buffer.len > 0 {
+		
+					return a.buffer.pop()
+					
+				} else {
+					subseed := a.ss.next() or { return none}
+
+					first_col := a.anagramme.index[subseed[0]] or {  continue }
+					for first in first_col{
+						for second in a.anagramme.find_iterator(subseed[1]) {
+							result := "${first} ${second}"
+							ratio := f64(result.count(" ")) / f64(result.len) 
+							if (ratio) >  0.2 {
+								continue
+							}
+							// println("${result} : ${ratio}")
 							if !(result in a.cache ){
 								a.cache[result] = true
 								a.buffer <<  result
