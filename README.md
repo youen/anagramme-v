@@ -7,7 +7,7 @@ Anagramme-V is a V programming language-based tool designed to find meaningful a
 To compile the tool, use the following command:
 
 ```bash
-v . --prod
+v . -prod
 ```
 
 This will produce a binary called `anagramme-v`.
